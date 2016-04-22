@@ -7,12 +7,12 @@ React Redux Starter Kit
 [![devDependency Status](https://david-dm.org/davezuko/react-redux-starter-kit/dev-status.svg)](https://david-dm.org/davezuko/react-redux-starter-kit#info=devDependencies)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 
-> ### Want Semicolons?
-> After installing npm dependencies, open `.eslintrc`, change the `semi` rule from `never` to `always`, and then run `npm run lint:fix` -- Easy as that! Alternatively, use the same npm script after installing and extending your preferred ESLint configuration; it's easy to customize the project's code style to suit your team's needs. See, we can coexist peacefully.
-
 This starter kit is designed to get you up and running with a bunch of awesome new front-end technologies, all on top of a configurable, feature-rich webpack build system that's already setup to provide hot reloading, CSS modules with Sass support, unit testing, code coverage reports, bundle splitting, and a whole lot more.
 
 The primary goal of this project is to remain as **unopinionated** as possible. Its purpose is not to dictate your project structure or to demonstrate a complete sample application, but to provide a set of tools intended to make front-end development robust, easy, and, most importantly, fun. Check out the full feature list below!
+
+Finally, This project wouldn't be possible without the help of our many contributors, so [thank you](#thank-you) for all of your help.
+
 
 Table of Contents
 -----------------
@@ -28,6 +28,7 @@ Table of Contents
 1. [Testing](#testing)
 1. [Deployment](#deployment)
 1. [Troubleshooting](#troubleshooting)
+1. [Thank You](#thank-you)
 
 Requirements
 ------------
@@ -38,14 +39,16 @@ Requirements
 Features
 --------
 
-* [React](https://github.com/facebook/react) (`^0.14.0`)
+* [React](https://github.com/facebook/react) (`^15.0.0`)
 * [Redux](https://github.com/rackt/redux) (`^3.0.0`)
   * react-redux (`^4.0.0`)
-  * redux-devtools
   * redux-thunk middleware
 * [react-router](https://github.com/rackt/react-router) (`^2.0.0`)
+  * Asynchronous routes configured with dependencies and reducers
 * [react-router-redux](https://github.com/rackt/react-router-redux) (`^4.0.0`)
 * [Webpack](https://github.com/webpack/webpack)
+  * Vanilla HMR using `module.hot` and `webpack-dev-middleware`
+  * Code-splitting using `react-router` route configuration
   * Bundle splitting and CSS extraction
   * Sass w/ CSS modules, autoprefixer, and minification
 * [Koa](https://github.com/koajs/koa) (`^2.0.0-alpha`)
@@ -55,8 +58,6 @@ Features
   * Code coverage reports/instrumentation with [isparta](https://github.com/deepsweet/isparta-loader)
 * [Flow](http://flowtype.org/) (`^0.22.0`)
 * [Babel](https://github.com/babel/babel) (`^6.3.0`)
-  * [react-transform-hmr](https://github.com/gaearon/react-transform-hmr) hot reloading for React components
-  * [redbox-react](https://github.com/KeywordBrain/redbox-react) visible error reporting for React components
   * [babel-plugin-transform-runtime](https://www.npmjs.com/package/babel-plugin-transform-runtime) so transforms aren't inlined
   * [babel-plugin-transform-react-constant-elements](https://babeljs.io/docs/plugins/transform-react-constant-elements/) save some memory allocation
   * [babel-plugin-transform-react-remove-prop-types](https://github.com/oliviertassinari/babel-plugin-transform-react-remove-prop-types) remove `PropTypes`
@@ -75,15 +76,23 @@ $ npm install                   # Install Node modules listed in ./package.json 
 $ npm start                     # Compile and launch
 ```
 
+### Redux DevTools
+
+#### We recommend using the [Redux DevTools Chrome Extension](https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd).
+
+Using the chrome extension allows your monitors to run on a separate thread and affords better performance and functionality. It comes with several of the most popular monitors, is easy to configure, filters actions, and doesn’t require installing any packages.
+
+However, adding the DevTools components to your project is simple, first grab the packages from npm:
+
+```
+npm i --D redux-devtools redux-devtools-log-monitor redux-devtools-dock-monitor
+```
+
+Then follow the [manual integration walkthrough](https://github.com/gaearon/redux-devtools/blob/master/docs/Walkthrough.md).
+
 ### Starting a New Project
 
-First, I highly suggest checking out a new project by
-[SpencerCDixon](https://github.com/SpencerCDixon):
-[redux-cli](https://github.com/SpencerCDixon/redux-cli). This tool integrates
-extremely well with this project and offers added benefits such as generators
-(components, redux modules, etc.) and config/template management. It's still a
-work in progress, but give it a shot and file bugs to help make the project more
-robust.
+First, I highly suggest checking out a new project by [SpencerCDixon](https://github.com/SpencerCDixon): [redux-cli](https://github.com/SpencerCDixon/redux-cli). This tool integrates extremely well with this project and offers added benefits such as generators (components, redux modules, etc.) and config/template management. It's still a work in progress, but give it a shot and file bugs to help make the project more robust.
 
 Alternatively, if you just want to stick with this project and want to start a fresh project without having to clean up the example code in `master`, you can do the following after cloning the repo:
 
@@ -111,21 +120,23 @@ Before delving into the descriptions of each available npm script, here's a brie
 
 Great, now that introductions have been made here's everything in full detail:
 
-|Script|Description|
+|`npm run...`|Description|
 |---|---|
-|`npm start`|Spins up Koa server to serve your app at `localhost:3000`. HMR will be enabled in development.|
-|`npm run compile`|Compiles the application to disk (`~/dist` by default).|
-|`npm run dev`|Same as `npm start`, but enables nodemon to automatically restart the server when server-related code is changed.|
-|`npm run dev:nw`|Same as `npm run dev`, but opens the redux devtools in a new window.|
-|`npm run dev:no-debug`|Same as `npm run dev` but disables redux devtools.|
-|`npm run test`|Runs unit tests with Karma and generates a coverage report.|
-|`npm run test:dev`|Runs Karma and watches for changes to re-run tests; does not generate coverage reports.|
-|`npm run deploy`|Runs linter, tests, and then, on success, compiles your application to disk.|
-|`npm run flow:check`|Analyzes the project for type errors.|
-|`npm run lint`|Lint all `.js` files.|
-|`npm run lint:fix`|Lint and fix all `.js` files. [Read more on this](http://eslint.org/docs/user-guide/command-line-interface.html#fix).|
+|`start`|Spins up Koa server to serve your app at `localhost:3000`. HMR will be enabled in development.|
+|`compile`|Compiles the application to disk (`~/dist` by default).|
+|`dev`|Same as `npm start`, but enables nodemon to automatically restart the server when server-related code is changed.|
+|`dev:nw`|Same as `npm run dev`, but opens the redux devtools in a new window.|
+|`dev:no-debug`|Same as `npm run dev` but disables redux devtools.|
+|`test`|Runs unit tests with Karma and generates a coverage report.|
+|`test:dev`|Runs Karma and watches for changes to re-run tests; does not generate coverage reports.|
+|`deploy`|Runs linter, tests, and then, on success, compiles your application to disk.|
+|`deploy:dev`|Same as `deploy` but overrides `NODE_ENV` to "development".|
+|`deploy:prod`|Same as `deploy` but overrides `NODE_ENV` to "production".|
+|`flow:check`|Analyzes the project for type errors.|
+|`lint`|Lint all `.js` files.|
+|`lint:fix`|Lint and fix all `.js` files. [Read more on this](http://eslint.org/docs/user-guide/command-line-interface.html#fix).|
 
-**NOTE:** Deploying to a specific environment? Make sure to specify your target `NODE_ENV` so webpack will use the correct configuration. For example: `NODE_ENV=production npm run compile` will compile your application with `~/build/webpack/_production.js`.
+**NOTE:** Deploying to a specific environment? Make sure to specify your target `NODE_ENV` so webpack will use the correct configuration. For example: `NODE_ENV=production npm run compile` will compile your application with `~/config/_production.js`.
 
 ### Configuration
 
@@ -161,16 +172,14 @@ This project integrates with [Redux CLI](https://github.com/SpencerCDixon/redux-
 |`redux g blueprint <new blueprint>`|generates an empty blueprint for you to make||
 **NOTE**: `redux-form` is not a dependency by default. If you wish to use it make sure to `npm i --save redux-form`, or if you wish to modify the skeleton you can update the blueprint in `~/blueprints/form/files/...`.
 
-All of these blueprints are available (and can be overriden) in the `~/blueprints` folder so you can customize the
-default generators for your project's specific needs. If you have an existing app you can run `redux init` to set up the CLI, then
-make sure to copy over the `blueprints` folder in this project for starter-kit specific generators.
+All of these blueprints are available (and can be overriden) in the `~/blueprints` folder so you can customize the default generators for your project's specific needs. If you have an existing app you can run `redux init` to set up the CLI, then make sure to copy over the `blueprints` folder in this project for starter-kit specific generators.
 
 [See the Redux CLI github repo](https://github.com/SpencerCDixon/redux-cli#creating-blueprints) for more information on how to create and use blueprints.
 
 Structure
 ---------
 
-The folder structure provided is only meant to serve as a guide, it is by no means prescriptive. It is something that has worked very well for me and my team, but use only what makes sense to you.
+The folder structure provided is only meant to serve as a guide, it is by no means prescriptive.
 
 ```
 .
@@ -183,25 +192,78 @@ The folder structure provided is only meant to serve as a guide, it is by no mea
 ├── server                   # Koa application (uses webpack middleware)
 │   └── main.js              # Server application entry point
 ├── src                      # Application source code
-│   ├── components           # Generic React Components (generally Dumb components)
-│   ├── containers           # Components that provide context (e.g. Redux Provider)
+│   ├── main.js              # Application bootstrap and rendering
+│   ├── components           # Reusable Presentational Components
+│   ├── containers           # Reusable Container Components
 │   ├── layouts              # Components that dictate major page structure
-│   ├── redux                # Redux-specific pieces
-│   │   ├── modules          # Collections of reducers/constants/actions
-│   │   └── utils            # Redux-specific helpers
-│   ├── routes               # Application route definitions
 │   ├── static               # Static assets (not imported anywhere in source code)
 │   ├── styles               # Application-wide styles (generally settings)
-│   ├── views                # Components that live at a route
-│   └── main.js              # Application bootstrap and rendering
+│   ├── store                # Redux-specific pieces
+│   │   ├── createStore.js   # Create and instrument redux store
+│   │   └── reducers.js      # Reducer registry and injection
+│   └── routes               # Main route definitions and async split points
+│       ├── index.js         # Bootstrap main application routes with store
+│       ├── Root.js          # Wrapper component for context-aware providers
+│       ├── Home             # Fractal route
+│       │   ├── index.js     # Route definitions and async split points
+│       │   ├── assets       # Assets required to render components
+│       │   ├── components   # Presentational React Components
+│       │   ├── container    # Connect components to actions and store
+│       │   ├── modules      # Collections of reducers/constants/actions
+│       │   └── routes **    # Fractal sub-routes (** optional)
+│       └── NotFound         # Capture unknown routes in component
 └── tests                    # Unit tests
 ```
 
-### Components vs. Views vs. Layouts
+#### Fractal App Structure
 
-**TL;DR:** They're all components.
+_Also known as: Self-Contained Apps, Recursive Route Hierarchy, Providers, etc_
 
-This distinction may not be important for you, but as an explanation: A **Layout** is something that describes an entire page structure, such as a fixed navigation, viewport, sidebar, and footer. Most applications will probably only have one layout, but keeping these components separate makes their intent clear. **Views** are components that live at routes, and are generally rendered within a **Layout**. What this ends up meaning is that, with this structure, nearly everything inside of **Components** ends up being a dumb component.
+Small applications can be built using a flat directory structure, with folders for `components`, `containers`, etc. However, this structure does not scale and can seriously affect development velocity as your project grows. Starting with a fractal structure allows your application to organically drive its own architecture from day one.
+
+We use `react-router` [route definitions](https://github.com/reactjs/react-router/blob/master/docs/API.md#plainroute) (`<route>/index.js`) to define units of logic within our application. *Additional child routes can be nested in a fractal hierarchy.*
+
+This provides many benefits that may not be immediately obvious:
+* Routes can be be bundled into "chunks" using webpack's [code splitting](https://webpack.github.io/docs/code-splitting.html) and merging algorithm. This means that the entire dependency tree for each route can be omitted from the initial bundle and then loaded *on demand*.
+* Since logic is self-contained, routes can easily be broken into separate repositories and referenced with webpack's [DLL plugin](https://github.com/webpack/docs/wiki/list-of-plugins#dllplugin) for flexible, high-performance development and scalability.
+
+Large, mature apps tend to naturally organize themselves in this way—analogous to large, mature trees (as in actual trees :evergreen_tree:). The trunk is the router, branches are route bundles, and leaves are views composed of common/shared components/containers. Global application and UI state should be placed on or close to the trunk (or perhaps at the base of a huge branch, eg. `/app` route).
+
+##### Layouts
+* Stateless components that dictate major page structure
+* Useful for composing `react-router` [named components](https://github.com/reactjs/react-router/blob/master/docs/API.md#components-1) into views
+
+##### Components
+* Prefer [stateless function components](https://facebook.github.io/react/docs/reusable-components.html#stateless-functions)
+  - eg: `const HelloMessage = ({ name }) => <div>Hello {name}</div>`
+* Top-level `components` and `containers` directories contain reusable components
+
+##### Containers
+* Containers **only** `connect` presentational components to actions/state
+  - Rule of thumb: **no JSX in containers**!
+* One or many container components can be composed in a stateless function component
+* Tip: props injected by `react-router` can be accessed using `connect`:
+  ```js
+    // CounterWithMusicContainer.js
+    import { connect } from 'react-redux'
+    import Counter from 'components/Counter'
+    export const mapStateToProps = (state, ownProps) => ({
+      counter: state.counter,
+      music: ownProps.location.query.music // why not
+    })
+    export default connect(mapStateToProps)(Counter)
+
+    // Location -> 'localhost:3000/counter?music=reggae'
+    // Counter.props = { counter: 0, music: 'reggae' }
+  ```
+
+##### Routes
+* A route directory...
+  - *Must* contain an `index.js` that returns route definition
+  - **Optional:** assets, components, containers, redux modules, nested child routes
+  - Additional child routes can be nested within `routes` directory in a fractal hierarchy
+
+**Note:** This structure is designed to provide a flexible foundation for module bundling and dynamic loading. **Using a fractal structure is optional, smaller apps might benefit from a flat routes directory**, which is totally cool! Webpack creates split points based on static analysis of `require` during compilation; the recursive hierarchy folder structure is simply for organizational purposes.
 
 Webpack
 -------
@@ -295,6 +357,10 @@ Have more questions? Feel free to submit an issue or join the Gitter chat!
 Troubleshooting
 ---------------
 
+### Want Semicolons?
+
+After installing npm dependencies, open `.eslintrc`, change the `semi` rule from `never` to `always`, and then run `npm run lint:fix` -- Easy as that! Alternatively, use the same npm script after installing and extending your preferred ESLint configuration; it's easy to customize the project's code style to suit your team's needs. See, we can coexist peacefully.
+
 ### `npm run dev:nw` produces `cannot read location of undefined.`
 
 This is most likely because the new window has been blocked by your popup blocker, so make sure it's disabled before trying again.
@@ -324,3 +390,15 @@ While this is common to any sizable application, it's worth noting for those who
 ```
 	"folder_exclude_patterns": [".svn",	".git",	".hg", "CVS",	"node_modules",	"dist"]
 ```
+
+Thank You
+---------
+
+This project wouldn't be possible without help from the community, so I'd like to highlight some of its biggest contributors. Thank you all for your hard work, you've made my life a lot easier and taught me a lot in the process.
+
+* [Justin Greenberg](https://github.com/justingreenberg) - For all of your PR's, getting us to Babel 6, and constant work improving our patterns.
+* [Roman Pearah](https://github.com/neverfox) - For your bug reports, help in triaging issues, and PR contributions.
+* [Spencer Dixin](https://github.com/SpencerCDixon) - For your creation of [redux-cli](https://github.com/SpencerCDixon/redux-cli).
+* [Jonas Matser](https://github.com/mtsr) - For your help in triaging issues and unending support in our Gitter channel.
+
+And to everyone else who has contributed, even if you are not listed here your work is appreciated.
