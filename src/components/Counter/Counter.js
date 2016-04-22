@@ -1,6 +1,6 @@
 /* @flow */
-import React from 'react'
-import classes from './Counter.scss'
+import React from 'react';
+import classes from './Counter.scss';
 
 // FlowType annotations
 type Props = {
@@ -26,12 +26,12 @@ export const Counter = (props: Props) => (
       Double (Async)
     </button>
   </div>
-)
+);
 
 Counter.propTypes = {
   counter: React.PropTypes.number.isRequired,
   doubleAsync: React.PropTypes.func.isRequired,
   increment: React.PropTypes.func.isRequired
-}
+};
 
-export default Counter
+export default Counter;

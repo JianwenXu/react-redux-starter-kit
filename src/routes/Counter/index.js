@@ -1,4 +1,4 @@
-import { injectReducer } from '../../store/reducers'
+import { injectReducer } from '../../store/reducers';
 
 export default (store) => ({
   path: 'counter',
@@ -9,12 +9,12 @@ export default (store) => ({
     ], (require) => {
   /*  These modules are lazily evaluated using require hook, and
       will not loaded until the router invokes this callback. */
-      const Counter = require('./containers/CounterContainer').default
-      const reducer = require('./modules/counter').default
+      const Counter = require('./containers/CounterContainer').default;
+      const reducer = require('./modules/counter').default;
 
-      injectReducer(store, { key: 'counter', reducer })
+      injectReducer(store, { key: 'counter', reducer });
 
-      next(null, Counter)
-    })
+      next(null, Counter);
+    });
   }
-})
+});

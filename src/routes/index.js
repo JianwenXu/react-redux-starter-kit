@@ -1,6 +1,6 @@
 // We only need to import the modules necessary for initial render
-import CoreLayout from '../layouts/CoreLayout/CoreLayout'
-import Home from './Home'
+import CoreLayout from '../layouts/CoreLayout/CoreLayout';
+import Home from './Home';
 
 export const createRoutes = (store) => {
 /*  Note: Instead of using JSX, we are using react-router PlainRoute,
@@ -17,12 +17,12 @@ export const createRoutes = (store) => {
           // Provide store for async reducers and middleware
           require('./Counter').default(store),
           require('./NotFound').default
-        ])
-      })
+        ]);
+      });
     }
-  }
+  };
 
-  return routes
-}
+  return routes;
+};
 
-export default createRoutes
+export default createRoutes;
