@@ -53,8 +53,3 @@ if (__DEV__ && module.hot) {
 }
 
 render();
-
-// statistics for production mode
-if (__PROD__) {
-  require('./utils/statistics')();
-}
