@@ -55,7 +55,6 @@ $ npm install
 ├── build                    # All build-related configuration
 │   └── webpack              # Environment-specific configuration files for webpack
 ├── config                   # Project configuration settings
-├── interfaces               # Type declarations for Flow
 ├── server                   # Express application (uses webpack middleware)
 │   └── main.js              # Server application entry point
 ├── src                      # Application source code
