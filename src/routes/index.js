@@ -1,28 +1,19 @@
-// We only need to import the modules necessary for initial render
-import CoreLayout from '../layouts/CoreLayout/CoreLayout';
+import React from 'react';
+import { Route, IndexRoute, Redirect } from 'react-router';
+
+// NOTE: here we're making use of the `resolve.root` configuration
+// option in webpack, which allows us to specify import paths as if
+// they were from the root of the ~/src directory. This makes it
+// very easy to navigate to files regardless of how deeply nested
+// your current file is.
+import CoreLayout from 'layouts/CoreLayout/CoreLayout';
 import Home from './Home';
+import Counter from './Counter';
 
-export const createRoutes = (store) => {
-/*  Note: Instead of using JSX, we are using react-router PlainRoute,
-    a simple javascript object to provide route definitions.
-    When creating a new async route, pass the instantiated store!   */
-
-  const routes = {
-    path: '/',
-    component: CoreLayout,
-    indexRoute: Home,
-    getChildRoutes (location, next) {
-      require.ensure([], (require) => {
-        next(null, [
-          // Provide store for async reducers and middleware
-          require('./Counter').default(store),
-          require('./NotFound').default
-        ]);
-      });
-    }
-  };
-
-  return routes;
-};
-
-export default createRoutes;
+export default (store) => (
+  <Route path='/' component={CoreLayout}>
+    <IndexRoute component={Home} />
+    <Route path='/counter' component={Counter} />
+    <Redirect from='*' to='/' />
+  </Route>
+);

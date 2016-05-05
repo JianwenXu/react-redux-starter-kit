@@ -3,4 +3,5 @@ coverage/**
 node_modules/**
 dist/**
 *.spec.js
+*.d.js
 src/index.html

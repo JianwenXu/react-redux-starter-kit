@@ -1,4 +1,7 @@
-.activeRoute {
+.route {
   font-weight: bold;
+}
+
+.route:active {
   text-decoration: underline;
 }

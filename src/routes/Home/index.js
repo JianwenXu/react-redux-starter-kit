@@ -1,5 +1,3 @@
-import HomeView from './components/HomeView';
+import HomeContainer from './containers/HomeContainer';
 
-export default {
-  component: HomeView
-};
+export default HomeContainer;

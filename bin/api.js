@@ -2,5 +2,5 @@
 
 require('./babel-reg');
 
-var server = require('./server.babel');
+var server = require('./api.babel');
 server.start();

@@ -8,12 +8,18 @@ const config = {
   env : process.env.NODE_ENV || 'development',
 
   // ----------------------------------
+  // Base name for react-router
+  // ----------------------------------
+  app_base_name: process.env.BASENAME || 'hello',
+
+  // ----------------------------------
   // Project Structure
   // ----------------------------------
   path_base  : path.resolve(__dirname, '..'),
   dir_client : 'src',
   dir_dist   : 'dist',
   dir_server : 'server',
+  dir_api    : 'api',
   dir_test   : 'tests',
 
   // ----------------------------------
@@ -21,6 +27,12 @@ const config = {
   // ----------------------------------
   server_host : 'localhost',
   server_port : process.env.PORT || 3000,
+
+  // ----------------------------------
+  // API Server Configuration
+  // ----------------------------------
+  api_host : 'localhost',
+  api_port : process.env.PORT || 8000,
 
   // ----------------------------------
   // Compiler Configuration
@@ -39,10 +51,12 @@ const config = {
   compiler_vendor : [
     'history',
     'react',
+    'react-dom',
     'react-redux',
     'react-router',
     'react-router-redux',
-    'redux'
+    'redux',
+    'redux-thunk'
   ],
 
   // ----------------------------------
@@ -77,7 +91,7 @@ config.globals = {
   '__PROD__'     : config.env === 'production',
   '__TEST__'     : config.env === 'test',
   '__DEBUG__'    : config.env === 'development' && !argv.no_debug,
-  '__BASENAME__' : JSON.stringify(process.env.BASENAME || '')
+  '__BASENAME__' : JSON.stringify('/' + config.app_base_name)
 };
 
 // ------------------------------------
@@ -107,6 +121,17 @@ config.utils_paths = {
   base   : base,
   client : base.bind(null, config.dir_client),
   dist   : base.bind(null, config.dir_dist)
+};
+
+// ------------------------------------
+// Proxy
+// ------------------------------------
+config.proxy = {
+  enabled: true,
+  options: {
+    host: `http://${config.api_host}:${config.api_port}`,
+    match: `/api/${config.app_base_name}`
+  }
 };
 
 export default config;

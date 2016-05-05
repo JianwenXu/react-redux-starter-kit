@@ -37,7 +37,7 @@ webpackConfig.entry = {
 // ------------------------------------
 webpackConfig.output = {
   filename: `[name].[${config.compiler_hash_type}].js`,
-  path: paths.dist(),
+  path: paths.dist(__DEV__ ? '' : config.app_base_name),
   publicPath: config.compiler_public_path
 };
 
@@ -49,7 +49,6 @@ webpackConfig.plugins = [
   new HtmlWebpackPlugin({
     template: paths.client('index.html'),
     hash: false,
-    favicon: paths.client('static/favicon.ico'),
     filename: 'index.html',
     inject: 'body',
     minify: {
@@ -106,12 +105,12 @@ webpackConfig.module.preLoaders = [{
   test: /\.(js|jsx)$/,
   loader: 'eslint',
   exclude: /node_modules/
-}]
+}];
 
 webpackConfig.eslint = {
   configFile: paths.base('.eslintrc'),
   emitWarning: __DEV__
-}
+};
 */
 
 // ------------------------------------
@@ -128,10 +127,7 @@ webpackConfig.module.loaders = [{
     presets: ['es2015', 'react', 'stage-0'],
     env: {
       production: {
-        plugins: [
-          'transform-react-remove-prop-types',
-          'transform-react-constant-elements'
-        ]
+        presets: ['react-optimize']
       }
     }
   }
@@ -157,7 +153,7 @@ const PATHS_TO_TREAT_AS_CSS_MODULES = [
 // If config has CSS modules enabled, treat this project's styles as CSS modules.
 if (config.compiler_css_modules) {
   PATHS_TO_TREAT_AS_CSS_MODULES.push(
-    paths.client().replace(/[\^\$\.\*\+\-\?\=\!\:\|\\\/\(\)\[\]\{\}\,]/g, '\\$&')
+    paths.client().replace(/[\^\$\.\*\+\-\?\=\!\:\|\\\/\(\)\[\]\{\}\,]/g, '\\$&') // eslint-disable-line
   );
 }
 
@@ -251,7 +247,13 @@ webpackConfig.module.loaders.push(
   { test: /\.ttf(\?.*)?$/,   loader: 'url?prefix=fonts/&name=[path][name].[ext]&limit=10000&mimetype=application/octet-stream' },
   { test: /\.eot(\?.*)?$/,   loader: 'file?prefix=fonts/&name=[path][name].[ext]' },
   { test: /\.svg(\?.*)?$/,   loader: 'url?prefix=fonts/&name=[path][name].[ext]&limit=10000&mimetype=image/svg+xml' },
-  { test: /\.(png|jpg)$/,    loader: 'url?limit=8192' }
+  {
+    test: /\.(png|jpg|gif)$/,
+    loaders: [
+      'url?name=images/[hash:8].[ext]&limit=8192',
+      'image-webpack?bypassOnDebug&optimizationLevel=7&progressive=true&interlaced=false'
+    ]
+  }
 )
 /* eslint-enable */
 

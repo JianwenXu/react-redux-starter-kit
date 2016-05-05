@@ -1,14 +1,16 @@
+import { get } from '../../netUtil';
+
 // ------------------------------------
 // Constants
 // ------------------------------------
-export const COUNTER_INCREMENT = 'COUNTER_INCREMENT';
+export const SAY_HELLO = 'SAY_HELLO';
 
 // ------------------------------------
 // Actions
 // ------------------------------------
-export function increment (value = 1) {
+export function hello (value = initialState) {
   return {
-    type: COUNTER_INCREMENT,
+    type: SAY_HELLO,
     payload: value
   };
 }
@@ -22,33 +24,45 @@ export function increment (value = 1) {
  * you'd probably want to dispatch an action of COUNTER_DOUBLE and let the
  * reducer take care of this logic.
  */
-export const doubleAsync = () => {
+export const sayHello = () => {
   return (dispatch, getState) => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        dispatch(increment(getState().counter));
-        resolve();
-      }, 200);
-    });
+    return get('/say', null,
+      (json) => {
+        const hasError = json.errcode !== 0;
+        dispatch(hello({
+          message: hasError ? json.errmsg : json.data.msg
+        }));
+      },
+      (err) => {
+        dispatch(hello({
+          message: (__DEBUG__ && err.message) ? err.message : 'NET ERROR!'
+        }));
+      }
+    );
   };
 };
 
 export const actions = {
-  increment,
-  doubleAsync
+  hello,
+  sayHello
 };
 
 // ------------------------------------
 // Action Handlers
 // ------------------------------------
 const ACTION_HANDLERS = {
-  [COUNTER_INCREMENT]: (state, action) => state + action.payload
+  [SAY_HELLO]: (state, action) => {
+    const { message } = action.payload;
+    return { message };
+  }
 };
 
 // ------------------------------------
 // Reducer
 // ------------------------------------
-const initialState = 0;
+const initialState = {
+  message: 'Welcome!'
+};
 export default function counterReducer (state = initialState, action) {
   const handler = ACTION_HANDLERS[action.type];
 
