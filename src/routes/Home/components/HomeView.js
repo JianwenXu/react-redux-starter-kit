@@ -1,4 +1,4 @@
-import React, { PropTypes } from 'react';
+import React from 'react';
 import DuckImage from '../assets/Duck.jpg';
 import classes from './HomeView.scss';
 
@@ -16,8 +16,8 @@ const HomeView = (props) => (
 );
 
 HomeView.propTypes = {
-  message: PropTypes.string.isRequired,
-  sayHello: PropTypes.func.isRequired
+  message: React.PropTypes.string.isRequired,
+  sayHello: React.PropTypes.func.isRequired
 };
 
 export default HomeView;

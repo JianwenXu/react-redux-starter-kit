@@ -2,7 +2,9 @@
 import _debug from 'debug';
 import path from 'path';
 import { argv } from 'yargs';
+import ip from 'ip';
 
+const localip = ip.address();
 const debug = _debug('app:config:_base');
 const config = {
   env : process.env.NODE_ENV || 'development',
@@ -25,13 +27,13 @@ const config = {
   // ----------------------------------
   // Server Configuration
   // ----------------------------------
-  server_host : 'localhost',
+  server_host : localip, // use string 'localhost' to prevent exposure on local network
   server_port : process.env.PORT || 3000,
 
   // ----------------------------------
   // API Server Configuration
   // ----------------------------------
-  api_host : 'localhost',
+  api_host : localip, // use string 'localhost' to prevent exposure on local network
   api_port : process.env.PORT || 8000,
 
   // ----------------------------------

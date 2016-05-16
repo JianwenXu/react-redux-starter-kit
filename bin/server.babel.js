@@ -28,6 +28,7 @@ function start () {
   server.listen(port);
   server.on('error', onError);
   debug(`Server is now running at http://${config.server_host}:${port}.`);
+  debug(`Server accessible via localhost:${port} if you are using the project defaults.`);
 }
 
 /**

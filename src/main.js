@@ -4,33 +4,42 @@ import createBrowserHistory from 'history/lib/createBrowserHistory';
 import { useRouterHistory } from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux';
 import makeRoutes from './routes';
-import Root from './containers/Root';
-import configureStore from './redux/configureStore';
+import AppContainer from './containers/AppContainer';
+import createStore from './redux/createStore';
 
-const MOUNT_ELEMENT = document.getElementById('root');
-
-// Configure history for react-router
+// ========================================================
+// Browser History Setup
+// ========================================================
 const browserHistory = useRouterHistory(createBrowserHistory)({
   basename: __BASENAME__
 });
 
+// ========================================================
+// Store and History Instantiation
+// ========================================================
 // Create redux store and sync with react-router-redux. We have installed the
 // react-router-redux reducer under the key "router" in src/routes/index.js,
 // so we need to provide a custom `selectLocationState` to inform
 // react-router-redux of its location.
-const store = configureStore(window.__INITIAL_STATE__, browserHistory);
+const initialState = window.___INITIAL_STATE__;
+const store = createStore(initialState, browserHistory);
 const history = syncHistoryWithStore(browserHistory, store, {
   selectLocationState: (state) => state.router
 });
 
-let render = (key = null) => {
+// ========================================================
+// Render Setup
+// ========================================================
+const MOUNT_NODE = document.getElementById('root');
+
+let render = (routerKey = null) => {
   // Now that we have the Redux store, we can create our routes. We provide
   // the store to the route definitions so that routes have access to it for
   // hooks such as `onEnter`.
   const routes = makeRoutes(store);
   ReactDOM.render(
-    <Root history={history} routes={routes} store={store} />,
-    MOUNT_ELEMENT
+    <AppContainer store={store} history={history} routes={routes} routerKey={routerKey} />,
+    MOUNT_NODE
   );
 };
 
@@ -40,7 +49,7 @@ if (__DEV__ && module.hot) {
   const renderApp = render;
   const renderError = (error) => {
     const RedBox = require('redbox-react');
-    ReactDOM.render(<RedBox error={error} />, MOUNT_ELEMENT);
+    ReactDOM.render(<RedBox error={error} />, MOUNT_NODE);
   };
   render = () => {
     try {
