@@ -12,7 +12,7 @@ const config = {
   // ----------------------------------
   // Base name for react-router
   // ----------------------------------
-  app_base_name: process.env.BASENAME || 'hello',
+  app_base_name: process.env.BASENAME || '',
 
   // ----------------------------------
   // Project Structure
