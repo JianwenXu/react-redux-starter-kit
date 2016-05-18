@@ -1,10 +1,12 @@
+@import 'colors';
+
 .counter {
   font-weight: bold;
 }
 
 .counter--green {
   composes: counter;
-  color: rgb(25,200,25);
+  color: #{$color_primary};
 }
 
 .counterContainer {
