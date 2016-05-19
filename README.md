@@ -23,6 +23,7 @@ React-Redux-Starter-Kit
 ```shell
 $ cd <project folder>
 $ npm install
+$ npm rebuild    // 编译生成部分依赖中与系统相关的库或可执行文件
 ```
 注意：个别依赖包的安装可能需自备梯子。。。
 
