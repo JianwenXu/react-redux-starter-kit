@@ -1,7 +1,7 @@
 import 'isomorphic-fetch';
 require('es6-promise').polyfill();
 
-const API_PREFIX = '/api/hello';
+const API_PREFIX = '/api' + (__BASENAME__ ? '' : `/${__BASENAME__}`);
 
 export function get (path, params, resultHandler, errorHandler) {
   let url = API_PREFIX + path;
@@ -15,12 +15,13 @@ export function get (path, params, resultHandler, errorHandler) {
     });
   }
   return fetch(url)
-    .then((response) => response.json())
-    .then((json) => {
+    .then(response => response.json())
+    .then(json => {
       if (resultHandler) {
         resultHandler(json);
       }
-    }).catch((err) => {
+    })
+    .catch(err => {
       if (errorHandler) {
         errorHandler(err);
       }
