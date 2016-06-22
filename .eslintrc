@@ -4,6 +4,9 @@
     "standard",
     "standard-react"
   ],
+  "plugins": [
+    "babel"
+  ],
   "env"     : {
     "browser" : true
   },
@@ -15,8 +18,10 @@
     "__BASENAME__" : false
   },
   "rules": {
+    "generator-star-spacing" : 0,
+    "babel/generator-star-spacing" : 1,
     "semi" : [2, "always"],
-    "max-len": [2, 120, 2],
-    "operator-linebreak": ["error", "before"]
+    "max-len" : [2, 120, 2],
+    "operator-linebreak" : ["error", "before"]
   }
 }

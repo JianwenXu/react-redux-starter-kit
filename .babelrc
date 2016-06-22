@@ -1,9 +1,7 @@
 {
+  "plugins": ["transform-runtime"],
   "presets": ["es2015", "react", "stage-0"],
   "env": {
-    "development": {
-      "plugins": ["transform-runtime"]
-    },
     "production": {
 	    "presets": ["react-optimize"]
     }

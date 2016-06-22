@@ -8,7 +8,7 @@ export default (config) => ({
     chunkModules : true,
     colors : true
   },
-  compiler_public_path: `/${config.app_base_name}/`,
+  compiler_public_path: config.app_base_name.length === 0 ? '/' : `/${config.app_base_name}/`,
   log4js: {
     info: {
       type: 'file',
