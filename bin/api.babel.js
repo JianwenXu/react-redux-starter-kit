@@ -3,7 +3,7 @@
 /**
  * Module dependencies.
  */
-import config from '../config';
+const config = require('../config/project.config');
 
 const port = config.api_port;
 

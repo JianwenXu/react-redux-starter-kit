@@ -1,44 +1,26 @@
-import { get } from '../../netUtil';
+import makeReducer from 'store/makeReducer';
 
 // ------------------------------------
 // Constants
 // ------------------------------------
 export const SAY_HELLO = 'SAY_HELLO';
+export const SAY_HELLO_SUCCESS = SAY_HELLO + '_SUCCESS';
+export const SAY_HELLO_FAIL = SAY_HELLO + '_FAIL';
 
 // ------------------------------------
 // Actions
 // ------------------------------------
-export function hello (value = initialState) {
+export function hello(value = initialState) {
   return {
     type: SAY_HELLO,
     payload: value
   };
 }
 
-/**
- * This is a thunk, meaning it is a function that immediately
- * returns a function for lazy evaluation. It is incredibly useful for
- * creating async actions, especially when combined with redux-thunk!
- *
- * NOTE: This is solely for demonstration purposes. In a real application,
- * you'd probably want to dispatch an action of COUNTER_DOUBLE and let the
- * reducer take care of this logic.
- */
 export const sayHello = () => {
-  return (dispatch, getState) => {
-    return get('/say', null,
-      (json) => {
-        const hasError = json.errcode !== 0;
-        dispatch(hello({
-          message: hasError ? json.errmsg : json.data.msg
-        }));
-      },
-      (err) => {
-        dispatch(hello({
-          message: (__DEBUG__ && err.message) ? err.message : 'NET ERROR!'
-        }));
-      }
-    );
+  return {
+    types: [SAY_HELLO, SAY_HELLO_SUCCESS, SAY_HELLO_FAIL],
+    promise: (client) => client.get('/say')
   };
 };
 
@@ -52,8 +34,15 @@ export const actions = {
 // ------------------------------------
 const ACTION_HANDLERS = {
   [SAY_HELLO]: (state, action) => {
-    const { message } = action.payload;
-    return { message };
+    return { message: 'LOADING...' };
+  },
+  [SAY_HELLO_SUCCESS]: (state, action) => {
+    const { data } = action.payload;
+    return { message: data.msg };
+  },
+  [SAY_HELLO_FAIL]: (state, action) => {
+    const { errmsg } = action.payload;
+    return { message: errmsg || 'NET ERROR!' };
   }
 };
 
@@ -63,8 +52,5 @@ const ACTION_HANDLERS = {
 const initialState = {
   message: 'Welcome!'
 };
-export default function counterReducer (state = initialState, action) {
-  const handler = ACTION_HANDLERS[action.type];
-
-  return handler ? handler(state, action) : state;
-}
+const helloReducer = makeReducer(ACTION_HANDLERS, initialState);
+export default helloReducer;

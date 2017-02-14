@@ -1,18 +1,20 @@
 /* eslint key-spacing:0 spaced-comment:0 */
-import _debug from 'debug';
-import path from 'path';
-import { argv } from 'yargs';
-import ip from 'ip';
+const path = require('path');
+const debug = require('debug')('app:config:project');
+const argv = require('yargs').argv;
+const ip = require('ip');
 
-const localip = ip.address();
-const debug = _debug('app:config:_base');
+debug('Creating default configuration.');
+// ========================================================
+// Default Configuration
+// ========================================================
 const config = {
   env : process.env.NODE_ENV || 'development',
 
   // ----------------------------------
   // Base name for react-router
   // ----------------------------------
-  app_base_name: process.env.BASENAME || '',
+  app_base_name : process.env.BASENAME || '',
 
   // ----------------------------------
   // Project Structure
@@ -20,6 +22,7 @@ const config = {
   path_base  : path.resolve(__dirname, '..'),
   dir_client : 'src',
   dir_dist   : 'dist',
+  dir_public : 'public',
   dir_server : 'server',
   dir_api    : 'api',
   dir_test   : 'tests',
@@ -27,18 +30,28 @@ const config = {
   // ----------------------------------
   // Server Configuration
   // ----------------------------------
-  server_host : localip, // use string 'localhost' to prevent exposure on local network
+  server_host : process.env.HOST || ip.address(), // use string 'localhost' to prevent exposure on local network
   server_port : process.env.PORT || 3000,
 
   // ----------------------------------
   // API Server Configuration
   // ----------------------------------
-  api_host : localip, // use string 'localhost' to prevent exposure on local network
-  api_port : process.env.PORT || 8000,
+  api_host : process.env.API_HOST || ip.address(), // use string 'localhost' to prevent exposure on local network
+  api_port : process.env.API_PORT || 8000,
 
   // ----------------------------------
   // Compiler Configuration
   // ----------------------------------
+  compiler_babel : {
+    cacheDirectory : true,
+    plugins        : ['transform-runtime'],
+    presets        : ['es2015', 'react', 'stage-0'],
+    env: {
+      production: {
+        presets: ['react-optimize']
+      }
+    }
+  },
   compiler_css_modules     : true,
   compiler_devtool         : 'source-map',
   compiler_hash_type       : 'hash',
@@ -50,7 +63,9 @@ const config = {
     chunkModules : false,
     colors : true
   },
-  compiler_vendor : [
+  compiler_vendors : [
+    'babel-polyfill',
+    'superagent',
     'history',
     'react',
     'react-dom',
@@ -64,7 +79,6 @@ const config = {
   // ----------------------------------
   // Test Configuration
   // ----------------------------------
-  coverage_enabled   : !argv.watch,
   coverage_reporters : [
     { type : 'text-summary' },
     { type : 'lcov', dir : 'coverage' }
@@ -92,7 +106,7 @@ config.globals = {
   '__DEV__'      : config.env === 'development',
   '__PROD__'     : config.env === 'production',
   '__TEST__'     : config.env === 'test',
-  '__DEBUG__'    : config.env === 'development' && !argv.no_debug,
+  '__COVERAGE__' : !argv.watch && config.env === 'test',
   '__BASENAME__' : JSON.stringify('/' + config.app_base_name)
 };
 
@@ -101,9 +115,11 @@ config.globals = {
 // ------------------------------------
 const pkg = require('../package.json');
 
-config.compiler_vendor = config.compiler_vendor
+config.compiler_vendors = config.compiler_vendors
   .filter((dep) => {
-    if (pkg.dependencies[dep]) return true;
+    if (pkg.dependencies[dep]) {
+      return true;
+    }
 
     debug(
       `Package "${dep}" was not found as an npm dependency in package.json; `
@@ -115,13 +131,15 @@ config.compiler_vendor = config.compiler_vendor
 // ------------------------------------
 // Utilities
 // ------------------------------------
-const resolve = path.resolve;
-const base = (...args) =>
-  Reflect.apply(resolve, null, [config.path_base, ...args]);
+function base () {
+  const args = [config.path_base].concat([].slice.call(arguments));
+  return path.resolve.apply(path, args);
+}
 
 config.utils_paths = {
   base   : base,
   client : base.bind(null, config.dir_client),
+  public : base.bind(null, config.dir_public),
   dist   : base.bind(null, config.dir_dist)
 };
 
@@ -136,4 +154,17 @@ config.proxy = {
   }
 };
 
-export default config;
+// ========================================================
+// Environment Configuration
+// ========================================================
+debug(`Looking for environment overrides for NODE_ENV "${config.env}".`);
+const environments = require('./environments.config');
+const overrides = environments[config.env];
+if (overrides) {
+  debug('Found overrides, applying to default configuration.');
+  Object.assign(config, overrides(config));
+} else {
+  debug('No environment overrides found, defaults will be used.');
+}
+
+module.exports = config;

@@ -2,7 +2,7 @@
 
 var url = require('url');
 
-exports = module.exports = function historyApiFallback (options) {
+exports = module.exports = function historyApiFallback(options) {
   options = options || {};
   var logger = getLogger(options);
 
@@ -74,7 +74,7 @@ exports = module.exports = function historyApiFallback (options) {
   };
 };
 
-function evaluateRewriteRule (parsedUrl, match, rule) {
+function evaluateRewriteRule(parsedUrl, match, rule) {
   if (typeof rule === 'string') {
     return rule;
   } else if (typeof rule !== 'function') {
@@ -87,7 +87,7 @@ function evaluateRewriteRule (parsedUrl, match, rule) {
   });
 }
 
-function acceptsHtml (header, options) {
+function acceptsHtml(header, options) {
   options.htmlAcceptHeaders = options.htmlAcceptHeaders || ['text/html', '*/*'];
   for (var i = 0; i < options.htmlAcceptHeaders.length; i++) {
     if (header.indexOf(options.htmlAcceptHeaders[i]) !== -1) {
@@ -97,11 +97,11 @@ function acceptsHtml (header, options) {
   return false;
 }
 
-function getLogger (options) {
+function getLogger(options) {
   if (options && options.logger) {
     return options.logger;
   } else if (options && options.verbose) {
     return console.log.bind(console);
   }
-  return function () {};
+  return function () { };
 }

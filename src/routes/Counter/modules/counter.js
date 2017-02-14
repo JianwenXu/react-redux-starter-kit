@@ -1,3 +1,5 @@
+import makeReducer from 'store/makeReducer';
+
 // ------------------------------------
 // Constants
 // ------------------------------------
@@ -49,8 +51,5 @@ const ACTION_HANDLERS = {
 // Reducer
 // ------------------------------------
 const initialState = 0;
-export default function counterReducer (state = initialState, action) {
-  const handler = ACTION_HANDLERS[action.type];
-
-  return handler ? handler(state, action) : state;
-}
+const couterReducer = makeReducer(ACTION_HANDLERS, initialState);
+export default couterReducer;

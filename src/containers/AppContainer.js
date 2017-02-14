@@ -4,19 +4,21 @@ import { Router } from 'react-router';
 
 class AppContainer extends React.Component {
   get content () {
-    const { history, routes, routerKey } = this.props;
-    return <Router history={history} children={routes} key={routerKey} />;
+    const { history, routes } = this.props;
+    return <Router history={history} children={routes} />;
   }
 
   get devTools () {
-    if (__DEBUG__) {
+    if (__DEV__) {
       if (!window.devToolsExtension) {
         const DevTools = require('./DevTools').default;
         return <DevTools />;
-      } else {
-        window.devToolsExtension.open();
       }
     }
+  }
+
+  shouldComponentUpdate () {
+    return false;
   }
 
   render () {
@@ -33,8 +35,7 @@ class AppContainer extends React.Component {
 
 AppContainer.propTypes = {
   history: React.PropTypes.object.isRequired,
-  routes: React.PropTypes.element.isRequired,
-  routerKey: React.PropTypes.number,
+  routes: React.PropTypes.object.isRequired,
   store: React.PropTypes.object.isRequired
 };
 

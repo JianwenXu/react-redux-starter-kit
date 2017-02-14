@@ -3,7 +3,7 @@
 /**
  * Module dependencies.
  */
-import config from '../config';
+const config = require('../config/project.config');
 
 const port = config.server_port;
 
@@ -21,6 +21,9 @@ function start () {
    * Create HTTP server.
    */
   const server = http.createServer(app);
+  server.setTimeout(30 * 60 * 1000, function() {
+    console.warn('Socket timeout!');
+  });
 
   /**
    * Listen on provided port, on all network interfaces.

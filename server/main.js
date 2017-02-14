@@ -1,32 +1,37 @@
-import httpProxy from 'http-proxy';
-import webpack from 'webpack';
-import webpackConfig from '../build/webpack.config';
-import historyApiFallback from './middleware/historyApiFallback';
-import webpackDevMiddleware from './middleware/webpack-dev';
-import webpackHMRMiddleware from './middleware/webpack-hmr';
-import config from '../config';
-import express from 'express';
-import path from 'path';
-import logger from 'morgan';
-import compress from 'compression'; // gzip
-import log4js from '../lib/log4js';
+'use strict';
 
-const paths = config.utils_paths;
+const express = require('express');
+const path = require('path');
+const morgan = require('morgan');
+const compress = require('compression'); // gzip
+const httpProxy = require('http-proxy');
+const debug = require('debug')('app:server');
+const historyApiFallback = require('./middleware/historyApiFallback');
+const log4js = require('../lib/log4js');
+const config = require('../config/project.config');
+
 const app = express();
+const paths = config.utils_paths;
 
-app.disable('x-powered-by');
+if (config.env === 'production') {
+  app.disable('x-powered-by');
+}
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 // middleware setup
 app.use(compress()); // gzip
-app.use(logger('dev'));
+app.use(morgan(config.env === 'production' ? 'combined' : 'dev')); // logger
 
 // Proxy config
 if (config.proxy.enabled) {
   const proxy = httpProxy.createProxyServer({
-    target: config.proxy.options.host
+    target: config.proxy.options.host,
+    proxyTimeout: 30 * 60 * 1000
+  });
+  proxy.on('proxyReq', function(proxyReq, req, res, options) {
+    proxyReq.setHeader('Content-Type', req.get('Content-Type') || 'application/json; charset=UTF-8');
   });
   // added the error handling to avoid https://github.com/nodejitsu/node-http-proxy/issues/527
   proxy.on('error', function (error, req, res) {
@@ -34,12 +39,13 @@ if (config.proxy.enabled) {
       console.error('proxy error', error);
     }
     if (!res.headersSent) {
-      res.writeHead(500, { 'content-type': 'application/json' });
+      res.writeHead(500, { 'Content-Type': 'application/json' });
     }
     let json = { error: 'proxy_error', reason: error.message };
     res.end(JSON.stringify(json));
   });
   app.use(config.proxy.options.match, function (req, res) {
+    res.set('Content-Type', 'application/json; charset=UTF-8');
     proxy.web(req, res);
   });
 }
@@ -50,30 +56,38 @@ if (config.proxy.enabled) {
 let staticPath;
 if (config.env === 'development') {
   // This rewrites all routes requests to the root /index.html file
-  // (ignoring file requests). If you want to implement isomorphic
+  // (ignoring file requests). If you want to implement universal
   // rendering, you'll want to remove this middleware.
   app.use(historyApiFallback({
     verbose: true
   }));
 
+  const webpack = require('webpack');
+  const webpackConfig = require('../config/webpack.config');
   const compiler = webpack(webpackConfig);
 
-  // Enable webpack-dev and webpack-hot middleware
-  const { publicPath } = webpackConfig.output;
+  debug('Enabling webpack dev and HMR middleware');
+  app.use(require('webpack-dev-middleware')(compiler, {
+    publicPath: webpackConfig.output.publicPath,
+    contentBase: paths.client(),
+    hot: true,
+    quiet: config.compiler_quiet,
+    noInfo: config.compiler_quiet,
+    lazy: false,
+    stats: config.compiler_stats
+  }));
+  app.use(require('webpack-hot-middleware')(compiler));
 
-  app.use(webpackDevMiddleware(compiler, publicPath));
-  app.use(webpackHMRMiddleware(compiler));
-
-  // Serve static assets from ~/src/static since Webpack is unaware of
+  // Serve static assets from ~/public since Webpack is unaware of
   // these files. This middleware doesn't need to be enabled outside
   // of development since this directory will be copied into ~/dist
   // when the application is compiled.
-  staticPath = paths.client('static');
+  staticPath = paths.public();
 } else {
   app.use(historyApiFallback({
     verbose: false,
     rewrites: [{
-      from: `\/${config.app_base_name}`,
+      from: `\/${config.app_base_name}`, // eslint-disable-line
       to: `/${config.app_base_name}/`
     }]
   }));
@@ -81,7 +95,7 @@ if (config.env === 'development') {
   // Serving ~/dist by default. Ideally these files should be served by
   // the web server and not the app server, but this helps to demo the
   // server in production.
-  staticPath = paths.base(config.dir_dist);
+  staticPath = paths.dist();
 }
 app.use(express.static(staticPath));
 
